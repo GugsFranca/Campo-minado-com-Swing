@@ -56,7 +56,7 @@ public class Campo {
         if (!aberto && !marcado) {
             aberto = true;
             if (minado) {
-                // TODO Implementar nova versão
+                // TODO Implementar nova versão 0.2
             }
             if (vizinhacaSegura()) {
                 vizinhos.forEach(v -> v.abrir());
