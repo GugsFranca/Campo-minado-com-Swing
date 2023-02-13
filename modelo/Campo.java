@@ -1,7 +1,9 @@
 package modelo;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class Campo {
@@ -14,10 +16,19 @@ public class Campo {
     private final int coluna;
 
     private List<Campo> vizinhos = new ArrayList<>();
+    private Set<CampoObservador> observadores = new HashSet<>();
 
     Campo(int linha, int coluna) {
         this.linha = linha;
         this.coluna = coluna;
+    }
+
+    public void registrarObservador(CampoObservador observador){
+        observadores.add(observador);
+    }
+
+    private void notificarObservadores(CampoEvento evento){
+        observadores.forEach(obs-> obs.eventoOcorreu(this, evento));
     }
 
     boolean adicionarVizinho(Campo vizinho) {
@@ -49,15 +60,24 @@ public class Campo {
     void alternarMarcacao() {
         if (!aberto) {
             marcado = !marcado;
+
+            if(marcado){
+                notificarObservadores(CampoEvento.MARCAR);
+            }
+            else{
+                notificarObservadores(CampoEvento.DESMARCAR);
+            }
         }
     }
 
     boolean abrir() {
         if (!aberto && !marcado) {
-            aberto = true;
             if (minado) {
-                // TODO Implementar nova versão 0.2
+                notificarObservadores(CampoEvento.EXPLODIR);
+                return true;
             }
+            setAberto(true);
+
             if (vizinhacaSegura()) {
                 vizinhos.forEach(v -> v.abrir());
             }
@@ -85,6 +105,9 @@ public class Campo {
     
     void setAberto(boolean aberto) {
         this.aberto = aberto;
+        if(aberto){
+            notificarObservadores(CampoEvento.ABRIR);
+        }
     }
 
     public boolean isAberto() {
