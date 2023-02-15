@@ -1,6 +1,7 @@
 package modelo;
 
 public class ResultadoEvento {
+    
     private final boolean ganhou;
 
     public ResultadoEvento(boolean ganhou) {
